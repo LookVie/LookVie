@@ -19,3 +19,5 @@ The list of cinemas nearby will show cinemas in certain radius however if there 
 we will use the algorithm that we proposed and recommend the fastest way to watch the certain movie
 
 Some parts may not be implemented (will be added while developing)
+For Alpha version the algorithm of finding the fastest cinema will be excluded
+The best cinema will be selected only by the closest cinema reachable by public transport 
