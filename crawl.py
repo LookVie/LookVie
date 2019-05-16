@@ -22,10 +22,9 @@ for top1 in cinema_list:
     save_clist = top1.text
 for topc in cinema_list:
     for top in s_time:
-        temp
-        print (temp)
-        str1 = ''.join(str(e) for e in top)
-        s_time_2=temp.split('(')
+        temp = top
+        str1 = str(temp).strip('<>')
+        s_time_2=str1.split('(')
         s_time_3 = s_time_2[1].split(',')
         print(topc.text + ' ' + s_time_3[0] + ' ' + s_time_3[17] + ' ' + s_time_3[1] + ' ' + s_time_3[2])
 
