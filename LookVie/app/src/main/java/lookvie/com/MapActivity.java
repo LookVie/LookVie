@@ -2,6 +2,7 @@ package lookvie.com;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.annotation.UiThread;
@@ -9,7 +10,10 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -22,6 +26,7 @@ import com.naver.maps.map.NaverMap;
 import com.naver.maps.map.NaverMapSdk;
 import com.naver.maps.map.OnMapReadyCallback;
 import com.naver.maps.map.overlay.InfoWindow;
+import com.naver.maps.map.overlay.LocationOverlay;
 import com.naver.maps.map.overlay.Marker;
 import com.naver.maps.map.overlay.Overlay;
 import com.naver.maps.map.overlay.PathOverlay;
@@ -52,19 +57,17 @@ import java.util.TreeMap;
 
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
-    private TextView textView;
     private JSONObject jsonObject = new JSONObject();
     private ArrayList<Marker> markerList = new ArrayList<>();
     private ArrayList<InfoWindow> InfoWindow = new ArrayList<>();
     private ArrayList<LatLng> finalList = new ArrayList<>();
     private ArrayList<String> finalrouteList = new ArrayList<>();
+    private ArrayList<String> finalListName = new ArrayList<>();
     private HashMap<LatLng,Integer> desList = new HashMap<>();
     private HashMap<LatLng,String> routeList = new HashMap<>();
     private HashMap<LatLng,String> mapO = new HashMap<>();
     private ListView listView;
 
-    String rr = new String();
-    int dad;
     int count=0;
     int sizecount=0;
 
@@ -130,12 +133,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         latlngss.add(new LatLng(37.561460, 126.990966));
         latlngss.add(new LatLng(37.561460, 126.990966)); // 테스트용으로 임시 추가
 
-        sortedTheater1 = sortByDistance(starting, latlngss); // 거리로 먼저 영화관 추려낸 뒤 (바로 소요시간으로 추려낼 시 타임아웃 문제)
-        sizecount = sortedTheater1.size();
-        for (int i = 0; i < sizecount; i++) {
-            turnOnAPI(starting, sortedTheater1.get(i),naverMap);
-            // 거리로 추려낸 영화관들을 소요시간으로 다시 추려낸 후, listview에 경로 String 올리고, Map에 경로 그림.
-        }
+        sortTheater(starting,latlngss,naverMap);
     }
 
     public void turnOnAPI(final LatLng startingPoint, final LatLng destination, final NaverMap naverMap) {
@@ -220,20 +218,50 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 finalList = sortByTime();
                 if(finalList.size()>3) {
                     for (int i = 0; i < 3; i++) {
-                        turnOnAPI2(mapO.get(finalList.get(i)), startingPoint, finalList.get(i), naverMap);
+                        turnOnAPI2(mapO.get(finalList.get(i)), startingPoint, finalList.get(i), naverMap,i);
                         finalrouteList.add(routeList.get(finalList.get(i)));
                         Log.d("sorted", routeList.get(finalList.get(i)));
                     }
                 }
                 else{
                     for (int i = 0; i < finalList.size(); i++) {
-                        turnOnAPI2(mapO.get(finalList.get(i)), startingPoint, finalList.get(i), naverMap);
+                        turnOnAPI2(mapO.get(finalList.get(i)), startingPoint, finalList.get(i), naverMap,i);
                         Log.d("sorted", routeList.get(finalList.get(i)));
                     }
                 }
 
-                ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, finalrouteList) ;
+                for(int i=0;i<finalrouteList.size();i++){
+
+                    finalListName.add("영화관 "+ (i+1));
+                }
+                ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, finalListName){
+                    @Override
+
+                    public View getView(int position, View convertView, ViewGroup parent) {
+                        View view = super.getView(position, convertView, parent);
+                        TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                        if(position == 0) {
+                            tv.setTextColor(Color.GREEN);
+                        }
+                        else if (position == 1){
+                            tv.setTextColor(Color.BLUE);
+                        }
+                        else{
+                            tv.setTextColor(Color.MAGENTA);
+                        }
+                        return view;
+                    }
+                };
                 listView.setAdapter(adapter) ;
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        Intent intent = new Intent(getApplicationContext(),MovieActivity.class);
+                        intent.putExtra("index", position);
+                        intent.putStringArrayListExtra("ArrayList", finalrouteList);
+                        startActivity(intent);
+                    }
+                });
             }
 
         } catch (JSONException e) {
@@ -241,7 +269,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
-    private void turnOnAPI2(String mapObj, final LatLng startingPoint, final LatLng destination, final NaverMap naverMap) {
+    private void turnOnAPI2(String mapObj, final LatLng startingPoint, final LatLng destination, final NaverMap naverMap,final int index) {
         ODsayService odsayService;
         odsayService = ODsayService.init(getApplicationContext(), "jS8GHAna7ORlgTBz3ccOT/b48MertkNiGzXI2jkjNpM");
         odsayService.setReadTimeout(5000);
@@ -250,7 +278,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @Override
             public void onSuccess(ODsayData oDsayData, API api) {
                 jsonObject = oDsayData.getJson();
-                drawOnMap(jsonObject, startingPoint, destination, naverMap);
+                drawOnMap(jsonObject, startingPoint, destination, naverMap,index);
             }
 
             @Override
@@ -261,19 +289,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     // 경로 파싱
-    private void drawOnMap(JSONObject jsonObject, LatLng startingPoint, LatLng destination, NaverMap naverMap) {
+    private void drawOnMap(JSONObject jsonObject, LatLng startingPoint, LatLng destination, NaverMap naverMap,int index) {
         PathOverlay path = new PathOverlay();
         PathOverlay sPath = new PathOverlay();
         PathOverlay ePath = new PathOverlay();
         ArrayList<LatLng> latLngArray = new ArrayList<>();
         ArrayList<LatLng> seLatLngArray = new ArrayList<>();
         Marker marker = new Marker();
+
         try {
             JSONObject result = jsonObject.getJSONObject("result");
             JSONArray laneArray = result.getJSONArray("lane");
             JSONArray sectionArray = laneArray.getJSONObject(0).getJSONArray("section");
             JSONArray graphPosArray = sectionArray.getJSONObject(0).getJSONArray("graphPos");
             int graphPosCount = graphPosArray.length();
+
             for (int i = 0; i < graphPosCount; i++) {
                 Double lat = graphPosArray.getJSONObject(i).getDouble("y");
                 Double lng = graphPosArray.getJSONObject(i).getDouble("x");
@@ -282,24 +312,48 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     seLatLngArray.add(startingPoint);
                     seLatLngArray.add(new LatLng(lat, lng));
                     sPath.setCoords(seLatLngArray);
-                    sPath.setColor(Color.BLUE);
-                    sPath.setMap(naverMap);
                     seLatLngArray.clear();
                 }
                 if (i == graphPosCount - 1) {
                     seLatLngArray.add(new LatLng(lat, lng));
                     seLatLngArray.add(destination);
                     ePath.setCoords(seLatLngArray);
-                    ePath.setColor(Color.BLUE);
-                    ePath.setMap(naverMap);
                 }
             }
             path.setCoords(latLngArray);
-            path.setColor(Color.GREEN);
-            path.setMap(naverMap);
-            marker.setPosition(destination);
-            marker.setIconTintColor(Color.RED);
-            marker.setMap(naverMap);
+            if(index==0) {
+                path.setColor(Color.GREEN);
+                path.setMap(naverMap);
+                sPath.setColor(Color.GREEN);
+                sPath.setMap(naverMap);
+                ePath.setColor(Color.GREEN);
+                ePath.setMap(naverMap);
+                marker.setPosition(destination);
+                marker.setIconTintColor(Color.GREEN);
+                marker.setMap(naverMap);
+            }
+            if(index==1) {
+                path.setColor(Color.BLUE);
+                path.setMap(naverMap);
+                sPath.setColor(Color.BLUE);
+                sPath.setMap(naverMap);
+                ePath.setColor(Color.BLUE);
+                ePath.setMap(naverMap);
+                marker.setPosition(destination);
+                marker.setIconTintColor(Color.BLUE);
+                marker.setMap(naverMap);
+            }
+            if(index==2) {
+                path.setColor(Color.MAGENTA);
+                path.setMap(naverMap);
+                sPath.setColor(Color.MAGENTA);
+                sPath.setMap(naverMap);
+                ePath.setColor(Color.MAGENTA);
+                ePath.setMap(naverMap);
+                marker.setPosition(destination);
+                marker.setIconTintColor(Color.MAGENTA);
+                marker.setMap(naverMap);
+            }
             markerList.add(marker);
             clickedMarker();
             Log.d("marker",Integer.toString(markerList.size()));
@@ -416,8 +470,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return true;
             }
         };
-        
+
         marker.setOnClickListener(listener);
+    }
+
+    private void sortTheater(LatLng starting,ArrayList<LatLng> latlngss,NaverMap naverMap){
+        ArrayList<LatLng> sortedTheater1 = sortByDistance(starting, latlngss); // 거리로 먼저 영화관 추려낸 뒤 (바로 소요시간으로 추려낼 시 타임아웃 문제)
+        sizecount = sortedTheater1.size();
+        for (int i = 0; i < sizecount; i++) {
+            turnOnAPI(starting, sortedTheater1.get(i),naverMap);
+            // 거리로 추려낸 영화관들을 소요시간으로 다시 추려낸 후, listview에 경로 String 올리고, Map에 경로 그림.
+        }
     }
 }
 
