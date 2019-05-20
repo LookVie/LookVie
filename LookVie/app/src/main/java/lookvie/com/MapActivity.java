@@ -61,6 +61,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private ArrayList<Marker> markerList = new ArrayList<>();
     private ArrayList<InfoWindow> InfoWindow = new ArrayList<>();
     private ArrayList<LatLng> finalList = new ArrayList<>();
+    private ArrayList<LatLng> finalfinalList = new ArrayList<>();
     private ArrayList<String> finalrouteList = new ArrayList<>();
     private ArrayList<String> finalListName = new ArrayList<>();
     private HashMap<LatLng,Integer> desList = new HashMap<>();
@@ -219,6 +220,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if(finalList.size()>3) {
                     for (int i = 0; i < 3; i++) {
                         turnOnAPI2(mapO.get(finalList.get(i)), startingPoint, finalList.get(i), naverMap,i);
+                        finalfinalList.add(finalList.get(i));
                         finalrouteList.add(routeList.get(finalList.get(i)));
                         Log.d("sorted", routeList.get(finalList.get(i)));
                     }
@@ -227,11 +229,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     for (int i = 0; i < finalList.size(); i++) {
                         turnOnAPI2(mapO.get(finalList.get(i)), startingPoint, finalList.get(i), naverMap,i);
                         finalrouteList.add(routeList.get(finalList.get(i)));
+                        finalfinalList.add(finalList.get(i));
                         Log.d("sorted", routeList.get(finalList.get(i)));
                     }
                 }
 
-                for(int i=0;i<finalrouteList.size();i++){
+                for(int i=0;i<finalfinalList.size();i++){
                     finalListName.add("영화관 "+ (i+1));
                 }
                 ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, finalListName){
