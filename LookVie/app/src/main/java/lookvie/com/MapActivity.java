@@ -131,7 +131,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         latlngss.add(new LatLng(37.541460, 126.990966));
         latlngss.add(new LatLng(37.551460, 126.990966));
         latlngss.add(new LatLng(37.561460, 126.990966));
-        latlngss.add(new LatLng(37.561460, 126.990966)); // 테스트용으로 임시 추가*/
+        latlngss.add(new LatLng(37.561460, 126.990966)); // 테스트용으로 임시 추가
 
         sortTheater(starting,latlngss,naverMap);
     }
@@ -231,7 +231,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     }
                 }
 
-                for(int i=0;i<finalList.size();i++){
+                for(int i=0;i<finalrouteList.size();i++){
                     finalListName.add("영화관 "+ (i+1));
                 }
                 ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, finalListName){
