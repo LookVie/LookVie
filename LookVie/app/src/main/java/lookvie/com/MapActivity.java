@@ -131,7 +131,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         latlngss.add(new LatLng(37.541460, 126.990966));
         latlngss.add(new LatLng(37.551460, 126.990966));
         latlngss.add(new LatLng(37.561460, 126.990966));
-        latlngss.add(new LatLng(37.561460, 126.990966)); // 테스트용으로 임시 추가
+        latlngss.add(new LatLng(37.561460, 126.990966)); // 테스트용으로 임시 추가*/
 
         sortTheater(starting,latlngss,naverMap);
     }
@@ -226,12 +226,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 else{
                     for (int i = 0; i < finalList.size(); i++) {
                         turnOnAPI2(mapO.get(finalList.get(i)), startingPoint, finalList.get(i), naverMap,i);
+                        finalrouteList.add(routeList.get(finalList.get(i)));
                         Log.d("sorted", routeList.get(finalList.get(i)));
                     }
                 }
 
-                for(int i=0;i<finalrouteList.size();i++){
-
+                for(int i=0;i<finalList.size();i++){
                     finalListName.add("영화관 "+ (i+1));
                 }
                 ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, finalListName){
@@ -372,7 +372,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         for (int i = 0; i < theaters.size(); i++) {
             distanceList.put(startingPoint.distanceTo(theaters.get(i)),theaters.get(i));
         }
-
         TreeMap<Double,LatLng> tm = new TreeMap<>(distanceList);
         Set<Double> keyset = distanceList.keySet();
         Iterator<Double> keyiterator = tm.keySet( ).iterator( );
@@ -384,7 +383,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         for (int i = 0; i < sortedByDistance.size(); i++) {
             Log.d("bb", sortedByDistance.get(i).toString());
         }
-
         return sortedByDistance;
     }
 
@@ -397,14 +395,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             distanceList[i][0] = i;
             distanceList[i][1] = startingPoint.distanceTo(theaters.get(i));
         }
-        Log.d("bb", Integer.toString(distanceList.length));
-
         java.util.Arrays.sort(distanceList, 0, theaters.size(), new java.util.Comparator<double[]>() {
             public int compare(double[] a, double[] b) {
                 return Double.compare(a[1], b[1]);
             }
         });
-
         if (theaters.size() >= 6) {
             for (int i = 0; i < 6; i++) {
                 sortedByDistance.add(theaters.get((int) distanceList[i][0]));
@@ -414,23 +409,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 sortedByDistance.add(theaters.get((int) distanceList[i][0]));
             }
         }
-
         return sortedByDistance;
     }
 
     private ArrayList<LatLng> sortByTime() { // 소요시간으로 정렬
-
         ArrayList<LatLng> sortedByTime = new ArrayList<LatLng>();
         Iterator keyiterator = sortByValue(desList).iterator();
-
         while(keyiterator.hasNext()) {
             sortedByTime.add((LatLng)keyiterator.next());
         }
-
         for (int i = 0; i < sortedByTime.size(); i++) {
             Log.d("time", Integer.toString(desList.get(sortedByTime.get(i))));
         }
-
         return sortedByTime;
     }
 
@@ -470,7 +460,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 return true;
             }
         };
-
         marker.setOnClickListener(listener);
     }
 
