@@ -98,21 +98,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         ArrayList<LatLng> sortedTheater1 = new ArrayList<>(); // 거리순으로 정렬된 영화관들
         LatLng starting = new LatLng(37.564108, 126.979413);
 
-        latlngss.add(new LatLng(37.563807,126.979313));
         latlngss.add(new LatLng(37.531460, 126.975966));
         latlngss.add(new LatLng(37.521460, 126.970966));
-        latlngss.add(new LatLng(37.511460, 126.960966));
-        latlngss.add(new LatLng(37.501460, 126.965966));
-        latlngss.add(new LatLng(37.491460, 126.985966));
-        latlngss.add(new LatLng(37.541460, 126.980966));
-        latlngss.add(new LatLng(37.551460, 126.960966));
-        latlngss.add(new LatLng(37.561460, 126.950966));
-        latlngss.add(new LatLng(37.521460, 126.940966));
-        latlngss.add(new LatLng(37.561360, 126.930966));
-        latlngss.add(new LatLng(37.491460, 126.920966));
-        latlngss.add(new LatLng(37.481460, 126.910966));
-        latlngss.add(new LatLng(37.471460, 126.900966));
-        latlngss.add(new LatLng(37.461460, 126.890966));
         latlngss.add(new LatLng(37.471460, 126.890966));
         latlngss.add(new LatLng(37.481460, 126.890966));
         latlngss.add(new LatLng(37.491460, 126.870966));
@@ -225,7 +212,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         turnOnAPI2(mapO.get(finalList.get(finalindex)), startingPoint, finalList.get(finalindex), naverMap,setcolor++);
                         finalfinalList.add(finalList.get(finalindex));
                         finalrouteList.add(routeList.get(finalList.get(finalindex)));
-                        Log.d("sorted", routeList.get(finalList.get(finalindex)));
                         finalindex++;
                     }
 
@@ -344,8 +330,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             markerList.add(marker);
             marker.setMap(naverMap);
             clickedMarker();
-            Log.d("marker",Integer.toString(markerList.size()));
-            Log.d("marker",Integer.toString(finalInfowindow.size()));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -369,9 +353,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Double key = keyiterator.next();
             sortedByDistance.add(tm.get(key));
         }
-        for (int i = 0; i < sortedByDistance.size(); i++) {
-            Log.d("bb", sortedByDistance.get(i).toString());
-        }
         return sortedByDistance;
     }
 
@@ -379,7 +360,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         // 2차원배열 sort (좀더빠름)
         ArrayList<LatLng> sortedByDistance = new ArrayList<LatLng>();
         double[][] distanceList = new double[50][2];
-        Log.d("bb", Integer.toString(theaters.size()));
         for (int i = 0; i < theaters.size(); i++) {
             distanceList[i][0] = i;
             distanceList[i][1] = startingPoint.distanceTo(theaters.get(i));
@@ -420,9 +400,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Iterator keyiterator = sortByValue(desList).iterator();
         while(keyiterator.hasNext()) {
             sortedByTime.add((LatLng)keyiterator.next());
-        }
-        for (int i = 0; i < sortedByTime.size(); i++) {
-            Log.d("time", Integer.toString(desList.get(sortedByTime.get(i))));
         }
         return sortedByTime;
     }
