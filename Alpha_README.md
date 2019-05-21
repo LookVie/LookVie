@@ -6,7 +6,7 @@ Objective: Let the user select the movie they want to watch and suggest the fast
 
 Alpha will contain
 major function running but not everything
-There maybe bugs
+
 Only 30 cinemas from CGV in Seoul will be available
 DB will be updated each day (24hours)
 - made by python
@@ -26,3 +26,6 @@ we will use the algorithm that we proposed and recommend the fastest way to watc
 Some parts may not be implemented (will be added while developing)
 For Alpha version the algorithm of finding the fastest cinema will be excluded
 The best cinema will be selected only by the closest cinema reachable by public transport 
+
+Bug Issues will be updated in our LookVie github/Issues
+Email bug report to hansnam123@gmail.com. We will appreciate explanation with screenshots
