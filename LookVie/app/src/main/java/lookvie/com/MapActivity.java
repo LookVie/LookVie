@@ -64,6 +64,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private ArrayList<LatLng> finalfinalList = new ArrayList<>();
     private ArrayList<String> finalrouteList = new ArrayList<>();
     private ArrayList<String> finalListName = new ArrayList<>();
+    private ArrayList<InfoWindow> finalInfowindow = new ArrayList<>();
     private HashMap<LatLng,Integer> desList = new HashMap<>();
     private HashMap<LatLng,String> routeList = new HashMap<>();
     private HashMap<LatLng,String> mapO = new HashMap<>();
@@ -71,6 +72,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     int count=0;
     int sizecount=0;
+    int finalindex=0;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,6 +98,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         ArrayList<LatLng> sortedTheater1 = new ArrayList<>(); // 거리순으로 정렬된 영화관들
         LatLng starting = new LatLng(37.564108, 126.979413);
 
+        latlngss.add(new LatLng(37.563807,126.979313));
         latlngss.add(new LatLng(37.531460, 126.975966));
         latlngss.add(new LatLng(37.521460, 126.970966));
         latlngss.add(new LatLng(37.511460, 126.960966));
@@ -217,22 +220,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             count++;
             if(count==sizecount) {
                 finalList = sortByTime();
-                if(finalList.size()>3) {
-                    for (int i = 0; i < 3; i++) {
-                        turnOnAPI2(mapO.get(finalList.get(i)), startingPoint, finalList.get(i), naverMap,i);
-                        finalfinalList.add(finalList.get(i));
-                        finalrouteList.add(routeList.get(finalList.get(i)));
-                        Log.d("sorted", routeList.get(finalList.get(i)));
+                while(finalfinalList.size()<3 && finalindex<finalList.size()) {
+                        int setcolor = finalfinalList.size();
+                        turnOnAPI2(mapO.get(finalList.get(finalindex)), startingPoint, finalList.get(finalindex), naverMap,setcolor++);
+                        finalfinalList.add(finalList.get(finalindex));
+                        finalrouteList.add(routeList.get(finalList.get(finalindex)));
+                        Log.d("sorted", routeList.get(finalList.get(finalindex)));
+                        finalindex++;
                     }
-                }
-                else{
-                    for (int i = 0; i < finalList.size(); i++) {
-                        turnOnAPI2(mapO.get(finalList.get(i)), startingPoint, finalList.get(i), naverMap,i);
-                        finalrouteList.add(routeList.get(finalList.get(i)));
-                        finalfinalList.add(finalList.get(i));
-                        Log.d("sorted", routeList.get(finalList.get(i)));
-                    }
-                }
 
                 for(int i=0;i<finalfinalList.size();i++){
                     finalListName.add("영화관 "+ (i+1));
@@ -324,42 +319,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 }
             }
             path.setCoords(latLngArray);
+            marker.setPosition(destination);
             if(index==0) {
                 path.setColor(Color.GREEN);
-                path.setMap(naverMap);
                 sPath.setColor(Color.GREEN);
-                sPath.setMap(naverMap);
                 ePath.setColor(Color.GREEN);
-                ePath.setMap(naverMap);
-                marker.setPosition(destination);
                 marker.setIconTintColor(Color.GREEN);
-                marker.setMap(naverMap);
             }
             if(index==1) {
                 path.setColor(Color.BLUE);
-                path.setMap(naverMap);
                 sPath.setColor(Color.BLUE);
-                sPath.setMap(naverMap);
                 ePath.setColor(Color.BLUE);
-                ePath.setMap(naverMap);
-                marker.setPosition(destination);
                 marker.setIconTintColor(Color.BLUE);
-                marker.setMap(naverMap);
             }
             if(index==2) {
                 path.setColor(Color.MAGENTA);
-                path.setMap(naverMap);
                 sPath.setColor(Color.MAGENTA);
-                sPath.setMap(naverMap);
                 ePath.setColor(Color.MAGENTA);
-                ePath.setMap(naverMap);
-                marker.setPosition(destination);
                 marker.setIconTintColor(Color.MAGENTA);
-                marker.setMap(naverMap);
             }
+            path.setMap(naverMap);
+            sPath.setMap(naverMap);
+            ePath.setMap(naverMap);
             markerList.add(marker);
+            marker.setMap(naverMap);
             clickedMarker();
             Log.d("marker",Integer.toString(markerList.size()));
+            Log.d("marker",Integer.toString(finalInfowindow.size()));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -389,7 +375,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         return sortedByDistance;
     }
 
-    private ArrayList<LatLng> sortByDistance(LatLng startingPoint, ArrayList<LatLng> theaters) {
+    private ArrayList<LatLng> sortByDistance(LatLng startingPoint, ArrayList<LatLng> theaters,NaverMap naverMap) {
         // 2차원배열 sort (좀더빠름)
         ArrayList<LatLng> sortedByDistance = new ArrayList<LatLng>();
         double[][] distanceList = new double[50][2];
@@ -405,11 +391,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         });
         if (theaters.size() >= 6) {
             for (int i = 0; i < 6; i++) {
-                sortedByDistance.add(theaters.get((int) distanceList[i][0]));
+                if(distanceList[i][1]<=700) {
+                    finalfinalList.add(theaters.get((int) distanceList[i][0]));
+                    finalrouteList.add("700m 이내 도보로 이동");
+                    shortDistance(startingPoint,theaters.get((int)distanceList[i][0]),naverMap,finalfinalList.size()-1);
+                }
+                else {
+                    sortedByDistance.add(theaters.get((int) distanceList[i][0]));
+                }
             }
         } else {
             for (int i = 0; i < theaters.size(); i++) {
-                sortedByDistance.add(theaters.get((int) distanceList[i][0]));
+                if(distanceList[i][1]<=700) {
+                    finalfinalList.add(theaters.get((int) distanceList[i][0]));
+                    finalrouteList.add("700m 이내 도보로 이동");
+                    shortDistance(startingPoint,theaters.get((int)distanceList[i][0]),naverMap,finalfinalList.size()-1);
+                }
+                else {
+                    sortedByDistance.add(theaters.get((int) distanceList[i][0]));
+                }
             }
         }
         return sortedByDistance;
@@ -446,9 +446,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             @NonNull
             @Override
             public CharSequence getText(@NonNull InfoWindow infoWindow) {
-                return "영화관";
+                return "영화관 " + markerList.size();
             }
-
         });
 
         Marker.OnClickListener listener = new Marker.OnClickListener() {
@@ -464,15 +463,47 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
         };
         marker.setOnClickListener(listener);
+        finalInfowindow.add(infoWindow);
     }
 
     private void sortTheater(LatLng starting,ArrayList<LatLng> latlngss,NaverMap naverMap){
-        ArrayList<LatLng> sortedTheater1 = sortByDistance(starting, latlngss); // 거리로 먼저 영화관 추려낸 뒤 (바로 소요시간으로 추려낼 시 타임아웃 문제)
-        sizecount = sortedTheater1.size();
-        for (int i = 0; i < sizecount; i++) {
-            turnOnAPI(starting, sortedTheater1.get(i),naverMap);
-            // 거리로 추려낸 영화관들을 소요시간으로 다시 추려낸 후, listview에 경로 String 올리고, Map에 경로 그림.
+        if(latlngss.size()==1){
+            Toast.makeText(getApplicationContext(),"영화를 상영하는 영화관이 없습니다",Toast.LENGTH_LONG).show();
         }
+        else {
+            ArrayList<LatLng> sortedTheater1 = sortByDistance(starting, latlngss, naverMap); // 거리로 먼저 영화관 추려낸 뒤 (바로 소요시간으로 추려낼 시 타임아웃 문제)
+            sizecount = sortedTheater1.size();
+            for (int i = 0; i < sizecount; i++) {
+                turnOnAPI(starting, sortedTheater1.get(i), naverMap);
+                // 거리로 추려낸 영화관들을 소요시간으로 다시 추려낸 후, listview에 경로 String 올리고, Map에 경로 그림.
+            }
+        }
+    }
+
+    private void shortDistance(LatLng starting,LatLng destination,NaverMap naverMap,int index){
+        Marker marker = new Marker();
+        PathOverlay path = new PathOverlay();
+        ArrayList<LatLng> se = new ArrayList<>();
+        se.add(starting);
+        se.add(destination);
+        path.setCoords(se);
+        marker.setPosition(destination);
+        if(index==0) {
+            path.setColor(Color.GREEN);
+            marker.setIconTintColor(Color.GREEN);
+        }
+        if(index==1) {
+            path.setColor(Color.BLUE);
+            marker.setIconTintColor(Color.BLUE);
+        }
+        if(index==2) {
+            path.setColor(Color.MAGENTA);
+            marker.setIconTintColor(Color.MAGENTA);
+        }
+        path.setMap(naverMap);
+        marker.setMap(naverMap);
+        markerList.add(marker);
+        clickedMarker();
     }
 }
 
