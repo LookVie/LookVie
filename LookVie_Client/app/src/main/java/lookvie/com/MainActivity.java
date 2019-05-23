@@ -8,6 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
     private Button searchButton;
     private EditText searchText;
@@ -20,6 +23,20 @@ public class MainActivity extends AppCompatActivity {
         searchButton = (Button)findViewById(R.id.searchButton);
         searchText = (EditText) findViewById(R.id.searchText);
 
+        // mysql
+        URLConnector url = new URLConnector('lookvies.c4gfbjjoxspj.us-east-2.rds.amazonaws.com');
+        url.start();
+        try {
+            url.join();
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+
+        String result = url.getTemp();
+        System.out.println(ParseJSON(result));
+
+        ParseJSON(result);
     }
 
     public void onSearchClicked(View v)
@@ -33,6 +50,23 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // JSON 데이터를 파싱합니다.
+    // URLConnector로부터 받은 String이 JSON 문자열이기 때문입니다.
+    public String ParseJSON(String target){
+        try {
+            JSONObject json = new JSONObject(target);
+            JSONArray arr = json.getJSONArray("userdata");
+            for(int i = 0; i < arr.length(); i++){
+                JSONObject json2 = arr.getJSONObject(i);
+                System.out.println(json2.getString("id"));
+            }
+            return "";
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
 }
 
