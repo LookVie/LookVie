@@ -103,6 +103,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Intent intent = getIntent();
         movieName = intent.getStringExtra("input");
         Toast.makeText(getApplicationContext(), "Input : " + movieName, Toast.LENGTH_LONG).show();
+        searchText.setText(movieName);
 
     }
 

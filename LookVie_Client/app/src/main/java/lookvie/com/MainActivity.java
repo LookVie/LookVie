@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
         searchText = (EditText) findViewById(R.id.searchText);
 
         // mysql
-        URLConnector url = new URLConnector('lookvies.c4gfbjjoxspj.us-east-2.rds.amazonaws.com');
+        URLConnector url = new URLConnector("lookvies.c4gfbjjoxspj.us-east-2.rds.amazonaws.com");
         url.start();
         try {
             url.join();
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
         String result = url.getTemp();
         System.out.println(ParseJSON(result));
+        Toast.makeText(getApplicationContext(), "db: "+ParseJSON(result), Toast.LENGTH_LONG).show();
 
         ParseJSON(result);
     }
