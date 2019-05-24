@@ -19,6 +19,7 @@ problem right now is can't express the pedestrian route
 UI design will have specific size - the Alpha's Alpha will be done by basic elements in Android Studio
 until this week(5/19) our goal will be finishing the Alpha's Alpha
 +DB test putting the data crawled to the server and test if it works
+Specific UI will be done for final DEMO
 
 The list of cinemas nearby will show cinemas in certain radius however if there is a cinema that has earlier screening time
 we will use the algorithm that we proposed and recommend the fastest way to watch the certain movie
