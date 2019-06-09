@@ -16,6 +16,6 @@ public class TheaterActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         movieName = intent.getStringExtra("input");
-        Toast.makeText(getApplicationContext(), "Input : " + movieName, Toast.LENGTH_LONG).show();
+        //Toast.makeText(getApplicationContext(), "Input : " + movieName, Toast.LENGTH_LONG).show();
     }
 }

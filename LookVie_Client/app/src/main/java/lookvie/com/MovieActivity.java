@@ -20,4 +20,11 @@ public class MovieActivity extends AppCompatActivity {
 
         textView.setText(ReceiveArr.get(index));
     }
+
+    public void onTheatherClicked(View v)
+    {
+        Intent intent = new Intent(getApplicationContext(), TheaterActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        startActivity(intent);
+    }
 }
